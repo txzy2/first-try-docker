@@ -6,23 +6,20 @@ class Database
     private const DB = 'mydatabase';
     private const USER = 'myuser';
     private const PASSWORD = 'mypassword';
-    private static $pdo = null;
 
-    // Статический метод для подключения к базе данных
     public static function connection()
     {
-        if (self::$pdo === null) {
-            $dsn = "pgsql:host=" . self::HOST . ";dbname=" . self::DB;
+        $dsn = "pgsql:host=" . self::HOST . ";dbname=" . self::DB;
+        try {
+            $pdo = new PDO($dsn, self::USER, self::PASSWORD, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]);
 
-            try {
-                self::$pdo = new PDO($dsn, self::USER, self::PASSWORD, [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                ]);
-            } catch (PDOException $e) {
-                echo "Ошибка подключения к базе данных: " . $e->getMessage();
-            }
+            return $pdo;
+        } catch (PDOException $e) {
+            echo "Ошибка подключения к базе данных: " . $e->getMessage();
+            return null;
         }
-        return self::$pdo;
     }
 }
